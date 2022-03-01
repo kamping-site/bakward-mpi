@@ -92,6 +92,9 @@
 #include <vector>
 #include <exception>
 #include <iterator>
+#ifdef BACKWARD_MPI
+#include <mpi.h>
+#endif
 
 #if defined(BACKWARD_SYSTEM_LINUX)
 
@@ -4055,6 +4058,15 @@ private:
     if (thread_id) {
       os << " in thread " << thread_id;
     }
+#ifdef BACKWARD_MPI
+    int mpi_initialized;
+    MPI_Initialized(&mpi_initialized);
+    if (mpi_initialized) {
+        int rank;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        os << " on rank " << rank;
+    }
+#endif
     os << ":\n";
   }
 
@@ -4249,7 +4261,9 @@ public:
 
     Printer printer;
     printer.address = true;
-    printer.print(st, stderr);
+    std::stringstream sstream;
+    printer.print(st, sstream);
+    std::cerr << sstream.str();
 
 #if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 700) || \
     (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L)
@@ -4449,7 +4463,9 @@ private:
     st.skip_n_firsts(skip_frames);
 
     printer.address = true;
-    printer.print(st, std::cerr);
+    std::stringstream sstream
+    printer.print(st, sstream);
+    std::cerr << sstream.str();
   }
 };
 

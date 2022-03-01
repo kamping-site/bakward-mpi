@@ -71,6 +71,7 @@ endif()
 add_library(backward_object OBJECT backward.cpp)
 target_compile_definitions(backward_object PRIVATE ${BACKWARD_DEFINITIONS})
 target_include_directories(backward_object PRIVATE ${BACKWARD_INCLUDE_DIRS})
+target_link_libraries(backward_object PRIVATE ${BACKWARD_LIBRARIES})
 set(BACKWARD_ENABLE $<TARGET_OBJECTS:backward_object> CACHE STRING
 	"Link with this object to setup backward automatically")
 
@@ -86,6 +87,7 @@ endif()
 add_library(backward ${libtype} backward.cpp)
 target_compile_definitions(backward PUBLIC ${BACKWARD_DEFINITIONS})
 target_include_directories(backward PUBLIC ${BACKWARD_INCLUDE_DIRS})
+target_link_libraries(backward PUBLIC ${BACKWARD_LIBRARIES})
 
 ###############################################################################
 # TESTS
@@ -127,6 +129,10 @@ if(BACKWARD_TESTS)
 	foreach(test ${TESTS})
 		backward_add_test(test/${test}.cpp ${BACKWARD_ENABLE})
 	endforeach()
+endif()
+if (BACKWARD_MPI)
+    add_executable(mpi_example mpi_example.cpp)
+    target_link_libraries(mpi_example PRIVATE Backward::Backward)
 endif()
 
 install(
