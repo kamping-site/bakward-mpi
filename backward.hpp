@@ -94,6 +94,7 @@
 #include <iterator>
 #ifdef BACKWARD_MPI
 #include <mpi.h>
+#include <array>
 #endif
 
 #if defined(BACKWARD_SYSTEM_LINUX)
@@ -4481,6 +4482,41 @@ public:
 };
 
 #endif // BACKWARD_SYSTEM_UNKNOWN
+
+#if BACKWARD_MPI
+static void mpi_error_handler_function(MPI_Comm*, int* errcode, ...) {
+    std::array<char, MPI_MAX_ERROR_STRING> error_string;
+    int resultlen;
+    MPI_Error_string(*errcode, error_string.data(), &resultlen);
+    backward::StackTrace st;
+    st.load_here(32);
+    st.skip_n_firsts(3);
+    backward::Printer p;
+    std::stringstream out;
+    p.print(st, out);
+    out << std::string(error_string.begin(), error_string.begin() + resultlen) << std::endl;
+    std::cerr << out.str();
+}
+
+struct MPIErrorHandler {
+    MPIErrorHandler(const MPIErrorHandler&) = delete;
+    MPIErrorHandler(MPIErrorHandler&&) = delete;
+    MPIErrorHandler& operator=(const MPIErrorHandler&) = delete;
+    MPIErrorHandler & operator=(MPIErrorHandler&&) = delete;
+
+    MPIErrorHandler(MPI_Comm comm) {
+        MPI_Comm_create_errhandler(mpi_error_handler_function, &error_handler);
+        MPI_Comm_set_errhandler(comm, error_handler);
+    }
+    ~MPIErrorHandler() {
+        MPI_Errhandler_free(&error_handler);
+    }
+
+private:
+    MPI_Errhandler error_handler;
+};
+
+#endif // BACKWARD_MPI
 
 } // namespace backward
 
