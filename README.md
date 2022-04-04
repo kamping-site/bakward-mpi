@@ -1,6 +1,6 @@
-B[aK|Ka]ward
+B[aK|Ka]ward-MPI
 ============
-B[aK|Ka]ward (pronounced baKward) is a fork of [Backward](https://github.com/bombela/backward-cpp) which enables beatiful stack trace printing for C++ with MPI.
+B[aK|Ka]ward-MPI is a fork of [Backward](https://github.com/bombela/backward-cpp) which enables beatiful stack trace printing for C++ with MPI.
 
 MPI support can be enabled by setting the CMake option `BACKWARD_MPI`. Enabling this adds the following features:
  - include MPI rank in the output if MPI is correctly initialized
