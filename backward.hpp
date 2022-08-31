@@ -4501,6 +4501,7 @@ static void mpi_error_handler_function(MPI_Comm*, int* errcode, ...) {
     p.print(st, out);
     out << std::string(error_string.begin(), error_string.begin() + resultlen) << std::endl;
     std::cerr << out.str();
+    exit(1);
 }
 
 struct MPIErrorHandler {
