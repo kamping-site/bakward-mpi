@@ -731,6 +731,7 @@ public:
   }
   size_t thread_id() const { return 0; }
   void skip_n_firsts(size_t) {}
+  void *const *begin() const { return nullptr; }
 };
 
 class StackTraceImplBase {
